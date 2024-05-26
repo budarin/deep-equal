@@ -1,36 +1,20 @@
-function is(x: any, y: any) {
-    return (
-        (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y) // eslint-disable-line no-self-compare
-    );
-}
-
-export function deepEqual(objA: unknown, objB: unknown): boolean {
-    if (is(objA, objB)) {
+export function deepEqual(obj1: unknown, obj2: unknown): boolean {
+    if (obj1 === obj2) {
         return true;
     }
 
-    if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
         return false;
     }
 
-    const keysA = Object.keys(objA);
-    const keysB = Object.keys(objB);
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
 
-    if (keysA.length !== keysB.length) {
+    if (keys1.length !== keys2.length) {
         return false;
     }
 
-    // Test for A's keys different from B.
-    for (let i = 0; i < keysA.length; i++) {
-        const currentKey = keysA[i];
-        if (
-            !Object.prototype.hasOwnProperty.call(objB, currentKey) ||
-            // $FlowFixMe[incompatible-use] lost refinement of `objB`
-            !is(objA[currentKey as keyof typeof objA], objB[currentKey as keyof typeof objB])
-        ) {
-            return false;
-        }
-    }
-
-    return true;
+    return keys1.every(
+        (key) => keys2.includes(key) && deepEqual(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2]),
+    );
 }
